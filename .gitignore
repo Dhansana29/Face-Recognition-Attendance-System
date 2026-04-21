@@ -1,0 +1,8 @@
+serviceAccountkey.json
+serviceAccountKey.json
+__pycache__/
+*.pyc
+dataset/
+face_model.xml
+labels.npy
+attendance.csv

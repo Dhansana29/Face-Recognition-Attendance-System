@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Records</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8fbff;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: white;
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h2 {
+            margin: 0;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.08);
+        }
+
+        .summary .count {
+            font-size: 28px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .table-box {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h2>Attendance Records</h2>
+        <a class="back-btn" href="/">Back</a>
+    </div>
+
+    <div class="container">
+        <div class="summary">
+            <div>Total Records</div>
+            <div class="count">{{ total_count }}</div>
+        </div>
+
+        <div class="table-box">
+            <table>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Time</th>
+                </tr>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row.student_id }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.time }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

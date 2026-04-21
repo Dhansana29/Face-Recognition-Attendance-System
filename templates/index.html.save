@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Attendance Dashboard</title>
+    <meta http-equiv="refresh" content="15">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eaf2ff, #f7fbff);
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f172a;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        #clock {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 25px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: #475569;
+            font-size: 16px;
+        }
+
+        .card .value {
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+
+        .actions a {
+            display: block;
+            text-decoration: none;
+            color: white;
+            background: #2563eb;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .actions a:hover {
+            background: #1d4ed8;
+            transform: scale(1.03);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .chart-panel {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("clock").innerHTML = now.toLocaleString();
+        }
+        setInterval(updateClock, 1000);
+        window.onload = updateClock;
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>Face Recognition Attendance Dashboard</h1>
+        <div id="clock"></div>
+    </div>
+
+    <div class="container">
+        <div class="cards">
+            <div class="card">
+                <h3>Total Attendance Records</h3>
+                <div class="value">{{ total_count }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Registered Students Marked</h3>
+                <div class="value">{{ total_students }}</div>
+            </div>
+
+            <div class="card">
+                <h3>System Status</h3>
+                <div class="value" style="font-size:20px;">
+                    <span class="badge">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>Quick Actions</h2>
+                <div class="actions">
+                    <a href="/register">Register Student</a>
+                    <a href="/train">Train Model</a>
+                    <a href="/recognize">Start Attendance</a>
+                    <a href="/attendance">View Full Attendance</a>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Latest Attendance</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Time</th>
+                    </tr>
+                    {% for row in latest_rows %}
+                    <tr>
+                        <td>{{ row.student_id }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.time }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="chart-panel">
+            <h2>Attendance Chart</h2>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <div class="footer-note">
+            Raspberry Pi + OpenCV + Firebase Firestore
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('attendanceChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Attendance Records', 'Students Marked'],
+                datasets: [{
+                    label: 'Dashboard Statistics',
+                    data: [{{ total_count }}, {{ total_students }}],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+<a href="/students">Manage Students</a>
+

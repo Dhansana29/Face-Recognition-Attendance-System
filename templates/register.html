@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Student</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .box {
+            width: 420px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        button {
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Register Student</h2>
+        <form method="POST">
+            <input type="text" name="student_id" placeholder="Student ID" required>
+            <input type="text" name="student_name" placeholder="Student Name" required>
+            <button type="submit">Capture Faces</button>
+        </form>
+        <p><a href="/">Back</a></p>
+    </div>
+</body>
+</html>
